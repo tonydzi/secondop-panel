@@ -1,0 +1,70 @@
+{
+  "_readme": "Copy to panel.json and keep your own rails. Secrets live in the environment ONLY; no key ever belongs in this file. 'family' is what quorum counts - two rails with the same family are two doors to one opinion.",
+
+  "quorum": 2,
+  "timeout_s": 180,
+  "http_max_tokens": 4000,
+
+  "rails": [
+    {
+      "name": "glm",
+      "family": "z-ai",
+      "kind": "http",
+      "api": "https://openrouter.ai/api/v1/chat/completions",
+      "key_env": "OPENROUTER_API_KEY",
+      "model": "z-ai/glm-4.7-flash",
+      "effort": "high"
+    },
+    {
+      "name": "gemini",
+      "family": "google",
+      "kind": "http",
+      "api": "https://openrouter.ai/api/v1/chat/completions",
+      "key_env": "OPENROUTER_API_KEY",
+      "model": "google/gemini-2.5-flash-lite",
+      "effort": "high"
+    },
+    {
+      "name": "deepseek",
+      "family": "deepseek",
+      "kind": "http",
+      "api": "https://openrouter.ai/api/v1/chat/completions",
+      "key_env": "OPENROUTER_API_KEY",
+      "model": "deepseek/deepseek-v4-flash",
+      "effort": "high"
+    },
+    {
+      "name": "qwen",
+      "family": "qwen",
+      "kind": "http",
+      "api": "https://openrouter.ai/api/v1/chat/completions",
+      "key_env": "OPENROUTER_API_KEY",
+      "model": "qwen/qwen3-coder-30b-a3b-instruct"
+    },
+
+    {
+      "_comment": "Local CLI rails: disabled by default because they need their own login. Enable the ones you actually have. {prompt_file} is replaced with a temp file holding the prompt - never pass a multi-line prompt as an argv string.",
+      "name": "codex",
+      "family": "openai",
+      "kind": "cmd",
+      "enabled": false,
+      "cmd": ["codex", "exec", "--skip-git-repo-check", "--full-auto=false", "-"]
+    },
+    {
+      "name": "grok",
+      "family": "x-ai",
+      "kind": "cmd",
+      "enabled": false,
+      "unset_env": ["XAI_API_KEY"],
+      "cmd": ["grok", "--prompt-file", "{prompt_file}", "--tools", "", "--no-subagents",
+              "--no-memory", "--no-plan", "--output-format", "plain"]
+    },
+    {
+      "name": "claude",
+      "family": "anthropic",
+      "kind": "cmd",
+      "enabled": false,
+      "cmd": ["claude", "-p", "--model", "sonnet"]
+    }
+  ]
+}
