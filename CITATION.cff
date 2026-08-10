@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: "If you use secondop-panel in research or software, please cite it as below."
+title: "secondop-panel"
+type: software
+authors:
+  - family-names: Dziatkovskii
+    given-names: Anton
+    orcid: "https://orcid.org/0000-0001-7408-3054"
+    affiliation: "Palo Alto AI Research Lab"
+repository-code: "https://github.com/tonydzi/secondop-panel"
+url: "https://github.com/tonydzi/secondop-panel"
+license: MIT
+abstract: >-
+  A second opinion that is actually plural. A review request is fanned out to several model
+  families at once, with a verdict contract, quorum counted by family rather than by head,
+  and an exit code that refuses to go green when no real second opinion was obtained. An
+  unknown rail is a visible skip, never a silent redirect into whichever vendor happens to
+  work, because a verdict from vendor A printed under the name of vendor C makes the
+  independence fake. Works with local CLIs, any OpenAI-compatible endpoint, or a mix.
+  Includes a measured demonstration that a panel given file paths instead of file contents
+  produces confident, professional and entirely fabricated findings.
+keywords:
+  - llm-evaluation
+  - code-review
+  - multi-model
+  - hallucination
+  - quorum
+  - ai-agents
