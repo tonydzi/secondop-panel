@@ -60,7 +60,7 @@ python secondop_panel.py t3 --task new-cache --files src/cache.py tests/test_cac
 git clone https://github.com/tonydzi/secondop-panel.git && cd secondop-panel
 cp panel.example.json panel.json         # edit: keep the rails you actually have
 export OPENROUTER_API_KEY=...            # or point the rails at your own endpoints
-python secondop_panel.py selftest        # offline: 30 checks, no network, no keys
+python secondop_panel.py selftest        # offline: 32 checks, no network, no keys
 python secondop_panel.py doctor          # which rails are alive on THIS machine
 python secondop_panel.py t3 --task my-fix --files src/a.py --context "what I did"
 ```
@@ -120,7 +120,7 @@ Picking the 3–4 families: [`docs/MODEL-FAMILIES.md`](docs/MODEL-FAMILIES.md).
 
 ## Every trap we paid for
 
-[`docs/GOTCHAS.md`](docs/GOTCHAS.md) — 18 of them, each one a bug a live panel found in this code: markdown-bolded verdict tags, `VERIFYING` scored as a verdict, `ACCEPT` on line one with `COUNTER` in the body, empty strings counted as opinions, `O_APPEND` not being atomic on Windows, and the reasoning-model trap where a tight token budget returns empty `content` with `finish_reason: stop` so your client invents a silence that never happened.
+[`docs/GOTCHAS.md`](docs/GOTCHAS.md) — 19 of them, each one a bug a live panel found in this code: markdown-bolded verdict tags, `VERIFYING` scored as a verdict, `ACCEPT` on line one with `COUNTER` in the body, empty strings counted as opinions, `O_APPEND` not being atomic on Windows, and the reasoning-model trap where a tight token budget returns empty `content` with `finish_reason: stop` so your client invents a silence that never happened.
 
 ## License
 

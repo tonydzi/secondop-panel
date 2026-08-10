@@ -87,6 +87,13 @@ A rail whose thread never returned was simply absent from the results, so a pane
 
 A bad ref or a non-repo directory returned `""` with no message, and the panel reviewed without the diff you explicitly asked for — then passed. Missing material must always be audible: it now warns, and an empty diff says so too.
 
+## 19. The selftest ran the branch nobody sees
+
+Every panel check in the selftest called `run_panel(..., quiet=True)` — so the *printing* branch was never executed, and a `TypeError` lived there through a completely green suite. It was in the one message that must never fail: the gate's own *"no independent second opinion"* report. The panel exited **1** (crash) instead of **3**, which a caller reads as "the tool is broken" rather than "the review did not happen" — the failure hiding inside the failure handler.
+
+It was found by running the published tool on purpose with a dead rail, not by the tests. So: **exercise the human-facing output in the test**, and after publishing, clone your own repo into a clean directory and break it on purpose. What you tested is not what you shipped until you have run what you shipped.
+
+
 ## The tests must be able to fail
 
 Every rule above has a check in `selftest`, and the checks are verified by mutation: break the exact line the rule protects and the selftest must redden. Seven mutations, seven kills — exact-token matching, family-based quorum, the contract check, the dropped-file counter, the hung-rail backfill, config validation, and the empty-reply guard. A green test suite that stays green on broken code is not evidence, it is decoration. The check count in the summary line is derived from the checks that ran, never typed in — a hard-coded total drifts the moment someone adds a check, and then a tool about honesty ships a small lie in its own output.

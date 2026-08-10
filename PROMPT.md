@@ -7,7 +7,7 @@ Copy everything below the line into **Claude Code, Codex, Cursor or any coding a
 I want a **panel of adversarial reviewers from different model families** on my pipeline, not a single "ask another model" call. Do this end to end and report what you actually verified.
 
 **Step 1 — install.**
-Clone `https://github.com/tonydzi/secondop-panel` into a tools directory (or vendor `secondop_panel.py` — it is one stdlib-only file, Python 3.8+, no dependencies). Run `python secondop_panel.py selftest`. It must print 30 checks, 0 failed. If it does not, stop and tell me why.
+Clone `https://github.com/tonydzi/secondop-panel` into a tools directory (or vendor `secondop_panel.py` — it is one stdlib-only file, Python 3.8+, no dependencies). Run `python secondop_panel.py selftest`. It must print 32 checks, 0 failed. If it does not, stop and tell me why.
 
 **Step 2 — pick my rails.**
 Read `docs/MODEL-FAMILIES.md`, then look at what this machine actually has: which model CLIs are on PATH and logged in, and which API keys exist in the environment. Propose **3–4 rails from 3–4 DIFFERENT labs** and tell me the shortfall honestly if I only have two. Write `panel.json` from `panel.example.json`, delete the rails I do not have, and set `family` to the lab for each one.

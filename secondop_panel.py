@@ -26,11 +26,12 @@ THREE TOUCHPOINTS (not "review at the end")
 
 THE BIG ONE -- SEND CONTENTS, NOT PATHS
     Give a panel a list of file paths and the models that cannot read your disk will not say so.
-    They will invent. Measured 2026-08-10 on a real repo, 4 models, one prompt carrying only
-    paths: 3 of 4 produced confident findings about functions, flags and even languages that do
-    not exist in the repo; 1 said "no file contents were provided, analysis is impossible".
-    The honest one is the useful one. This tool therefore refuses to send bare paths unless you
-    pass --paths-only, and a run in that mode can never return 0.
+    They will invent. Measured 2026-08-10 on this very repo, 4 models from 4 families, same
+    reviewer role, only the material changed: with paths alone all 4 returned confident numbered
+    findings about functions and flags that do not exist here, and NONE mentioned that they had
+    no code. With the contents sent, every finding named a real symbol and four of them were real
+    defects. This tool therefore refuses to send bare paths unless you pass --paths-only, and a
+    run in that mode can never return 0.
 
 EXIT CODES (the gate, not decoration)
     0  quorum met -- at least N distinct families answered
@@ -54,6 +55,8 @@ Stdlib only. Python 3.8+. MIT.
 from __future__ import annotations
 
 import argparse
+import contextlib
+import io
 import json
 import os
 import re
@@ -74,7 +77,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CONF_PATH = os.environ.get("SECONDOP_PANEL_CONF") or os.path.join(HERE, "panel.json")
 USAGE_LOG = os.environ.get("SECONDOP_PANEL_LOG") or os.path.join(HERE, "panel_usage.jsonl")
 
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 
 # ---------------------------------------------------------------------------------------------
 # 1. THE CONTRACT
@@ -596,11 +599,16 @@ def run_panel(prompt, rails, conf, task="", point="t3", degraded=False, quiet=Fa
                   % ", ".join(off_contract))
     if len(fams) < need:
         if not quiet:
+            # `sorted(...) - fams` was a precedence bug that crashed with TypeError -- and it sat
+            # in the ONE branch that must never fail: the gate's own "there was no second opinion"
+            # message. Exit 1 (crash) then reads to the caller as "the tool is broken" instead of
+            # "the review did not happen". Caught only by running the panel for real; the selftest
+            # had been calling it with quiet=True and never executed this line (see GOTCHAS 19).
+            asked = {(r.get("family") or r.get("name") or "?").lower() for r in results}
             print("!! NO INDEPENDENT SECOND OPINION: %d distinct famil%s answered, need %d. "
                   "Missing: %s\n   Your ritual may report at most a WARNING, never a pass."
                   % (len(fams), "y" if len(fams) == 1 else "ies", need,
-                     ", ".join(sorted({(r.get('family') or r['name']) for r in results})
-                               - fams) or "-"))
+                     ", ".join(sorted(asked - fams)) or "-"))
         return 3, results
     if degraded:
         if not quiet:
@@ -823,6 +831,24 @@ def cmd_selftest():
         len(back) == 2 and back[1]["reply"] is None and "did not return" in back[1]["err"])
     chk("quorum is not granted by a rail that never spoke",
         len(families_answered(back)) == 1)
+    # The report the human actually reads must be executed by the test. Running every panel check
+    # with quiet=True left the printing branch unexercised, and a crash lived there through a full
+    # green selftest: the gate's "no second opinion" message died with TypeError and exit 1, which
+    # a caller reads as "tool broken", not "the review did not happen".
+    buf = io.StringIO()
+    with contextlib.redirect_stdout(buf):
+        rc_loud, _ = run_panel("x", [{"name": "ghost", "family": "gh", "kind": "cmd",
+                                      "cmd": ["definitely-not-a-real-binary-xyz"]}],
+                               {"quorum": 2, "timeout_s": 5}, task="selftest", quiet=False)
+    printed = buf.getvalue()
+    chk("the no-quorum report actually prints (not just returns 3)",
+        rc_loud == 3 and "NO INDEPENDENT SECOND OPINION" in printed and "gh" in printed)
+    with contextlib.redirect_stdout(buf):
+        rc_deg, _ = run_panel("x", [{"name": "g1", "family": "f1", "kind": "cmd", "cmd": ["x"]}],
+                              {"quorum": 0, "timeout_s": 5}, task="selftest", degraded=True,
+                              quiet=False)
+    chk("a degraded (paths-only) run can never return 0", rc_deg == 3)
+
     chk("blank reply is not an opinion even with the contract check off",
         len(families_answered([{"name": "a", "family": "x", "reply": "   \n "}],
                               require_contract=False)) == 0)
