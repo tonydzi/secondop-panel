@@ -1,6 +1,9 @@
-panel.json
-panel_usage.jsonl
-__pycache__/
+*.egg-info/
 *.pyc
+__pycache__/
 _exp_*
 _mut/
+build/
+dist/
+panel.json
+panel_usage.jsonl
