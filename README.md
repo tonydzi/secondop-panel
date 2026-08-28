@@ -6,7 +6,7 @@ This is the panel: a review request fanned out to **several model families at on
 
 Stdlib-only Python, one file, MIT. Works with local CLIs (`codex`, `grok`, `gemini`, `claude`), any OpenAI-compatible HTTP endpoint (OpenRouter, vendor APIs, your own gateway), or a mix.
 
-Built and used daily at [Palo Alto AI Research Lab](https://github.com/tonydzi/Palo-Alto-AI-Research-Lab) — it is the gate our agents must pass before they are allowed to say "done".
+Built and used daily at [Palo Alto AI Research Lab](https://github.com/tonydzi/tonydzi) — it is the gate our agents must pass before they are allowed to say "done".
 
 ---
 
