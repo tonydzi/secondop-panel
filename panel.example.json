@@ -1,5 +1,5 @@
 {
-  "_readme": "Copy to panel.json and keep your own rails. Secrets live in the environment ONLY; no key ever belongs in this file. 'family' is what quorum counts - two rails with the same family are two doors to one opinion.",
+  "_readme": "Copy to panel.json and keep your own rails. Secrets live in the environment ONLY; no key ever belongs in this file. 'family' is what quorum counts - two rails with the same family are two doors to one opinion. Model tier is not a budget knob: the flash/lite tier spends its budget on reasoning and returns nothing, which silently shrinks your quorum (gotcha 20) - smartest model per family, effort medium.",
 
   "quorum": 2,
   "timeout_s": 180,
@@ -12,8 +12,8 @@
       "kind": "http",
       "api": "https://openrouter.ai/api/v1/chat/completions",
       "key_env": "OPENROUTER_API_KEY",
-      "model": "z-ai/glm-4.7-flash",
-      "effort": "high"
+      "model": "z-ai/glm-5.3",
+      "effort": "medium"
     },
     {
       "name": "gemini",
@@ -21,8 +21,8 @@
       "kind": "http",
       "api": "https://openrouter.ai/api/v1/chat/completions",
       "key_env": "OPENROUTER_API_KEY",
-      "model": "google/gemini-2.5-flash-lite",
-      "effort": "high"
+      "model": "google/gemini-3.1-pro-preview",
+      "effort": "medium"
     },
     {
       "name": "deepseek",
@@ -30,8 +30,8 @@
       "kind": "http",
       "api": "https://openrouter.ai/api/v1/chat/completions",
       "key_env": "OPENROUTER_API_KEY",
-      "model": "deepseek/deepseek-v4-flash",
-      "effort": "high"
+      "model": "deepseek/deepseek-v4-pro",
+      "effort": "medium"
     },
     {
       "name": "qwen",
@@ -43,7 +43,7 @@
     },
 
     {
-      "_comment": "Local CLI rails: disabled by default because they need their own login. Enable the ones you actually have. {prompt_file} is replaced with a temp file holding the prompt - never pass a multi-line prompt as an argv string.",
+      "_comment": "Local CLI rails: disabled by default because they need their own login. Enable the ones you actually have - and if you hold a flat subscription for one of these families, enable it and drop that family's http rail above, or you are paying a gateway for a bucket you already own (gotcha 21). {prompt_file} is replaced with a temp file holding the prompt - never pass a multi-line prompt as an argv string.",
       "name": "codex",
       "family": "openai",
       "kind": "cmd",

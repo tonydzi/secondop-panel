@@ -98,11 +98,13 @@ Exit codes are the gate, not decoration:
   "rails": [
     {"name":"gemini","family":"google","kind":"http",
      "api":"https://openrouter.ai/api/v1/chat/completions",
-     "key_env":"OPENROUTER_API_KEY","model":"google/gemini-2.5-flash-lite","effort":"high"},
+     "key_env":"OPENROUTER_API_KEY","model":"google/gemini-3.1-pro-preview","effort":"medium"},
     {"name":"grok","family":"x-ai","kind":"cmd","unset_env":["XAI_API_KEY"],
      "cmd":["grok","--prompt-file","{prompt_file}","--tools","","--no-plan"]}
   ] }
 ```
+
+**Tier is not a budget knob.** The `*-flash` / `*-lite` tier spends its token budget on reasoning and hands back an empty answer, so the rail drops out and your quorum quietly shrinks to whoever finished — we chased that three times before naming it ([gotcha 20](docs/GOTCHAS.md)). Smartest model each family sells, `effort` **medium** (not `high` — `high` is what truncated them). And if you already pay a flat subscription for a family, run it as a `cmd` rail and drop its gateway twin ([gotcha 21](docs/GOTCHAS.md)).
 
 `{prompt_file}` is replaced with a temp file holding the prompt; rails without it get the prompt on stdin. **Never pass a multi-line prompt as an argv string** — shell/CRT quoting mangles it and the vendor silently sees only the first line.
 

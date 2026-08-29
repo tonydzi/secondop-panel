@@ -6,7 +6,7 @@ Quorum counts **families**, so the only question that matters is: *would these t
 
 **One rail per lab.** Two models from the same lab share training data, RLHF taste and blind spots. They agree with each other far more than they agree with an outsider — and agreement between correlated reviewers reads exactly like confirmation while carrying almost no information.
 
-A "family" is the lab, not the model: `google/gemini-2.5-flash-lite` and a local `gemini` CLI are one family. In `panel.json`, `family` is yours to declare — declare it honestly, because the whole guarantee rests on that string.
+A "family" is the lab, not the model: `google/gemini-3.1-pro-preview` and a local `gemini` CLI are one family. In `panel.json`, `family` is yours to declare — declare it honestly, because the whole guarantee rests on that string.
 
 ## The floor: three, and why not two
 

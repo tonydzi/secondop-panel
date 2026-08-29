@@ -94,6 +94,49 @@ Every panel check in the selftest called `run_panel(..., quiet=True)` — so the
 It was found by running the published tool on purpose with a dead rail, not by the tests. So: **exercise the human-facing output in the test**, and after publishing, clone your own repo into a clean directory and break it on purpose. What you tested is not what you shipped until you have run what you shipped.
 
 
+## 20. The cheap tier is a fourth way to fake independence ⭐
+
+Gotchas 2, 3 and 4 are all the same disease: a panel that looks like several opinions and is
+not. Here is the fourth door into it, and it is the one that stays open longest, because the
+config looks perfectly diverse.
+
+We ran the panel on `*-flash` and `*-flash-lite` models — five different labs, honest `family`
+strings, real quorum. It reported half-silent panels **three separate times** (13, 17 and 20
+Aug) before we stopped blaming the parser. The mechanism is gotcha 10 wearing a different hat:
+on the cheap tier the reasoning budget eats the answer, so the rail returns nothing usable and
+drops out of the count. Quorum then rests on whichever two rails happened to finish — which is
+not a panel, it is a coin toss with a verdict contract.
+
+Two settings came out of it, and they pull in opposite directions on purpose:
+
+* **The smartest model each family sells, not the cheapest.** A reviewer that cannot hold your
+  file in its head is not a second opinion at any price. The whole panel still costs cents.
+* **Reasoning effort `medium`, not `high`.** `high` was what truncated the answers in all three
+  incidents. Max intelligence, middling deliberation — the opposite of the intuitive setting.
+
+If a rail 400s on the `reasoning` field, retry **once** without it and say so. Never silently
+downgrade the default: a quiet fallback to a dumber configuration is the same lie as gotcha 4,
+told about the model instead of the vendor.
+
+## 21. Paying a gateway for a family whose subscription you already own
+
+A hosted gateway makes every family one line of JSON away, and that convenience quietly becomes
+the default even for vendors you already pay a flat subscription for. Thirty days of our own
+logs: the subscription CLIs answered **161 of 161** runs — the gateway fallback fired zero
+times — and yet **92** runs had been sent to the paid gateway by hand anyway. Nothing was
+broken; nobody was watching which door the review walked through.
+
+The rule we run now: **a family you hold a subscription for is a `cmd` rail first**, and the
+gateway is what you reach for when that rail is dead or when the family is one you do not own.
+Same panel, same quorum, same families — the money just stops leaving twice.
+
+One honest gap while we are here: for one vendor we have not verified the gateway's model id
+against the live catalogue, so the fallback for that family is *not* configured. An unverified
+model string in a config file is a rail that will fail at the worst moment, and guessing it
+would be inventing a number. When that rail dies we currently backfill with the other families
+and say so in the output.
+
+
 ## The tests must be able to fail
 
 Every rule above has a check in `selftest`, and the checks are verified by mutation: break the exact line the rule protects and the selftest must redden. Seven mutations, seven kills — exact-token matching, family-based quorum, the contract check, the dropped-file counter, the hung-rail backfill, config validation, and the empty-reply guard. A green test suite that stays green on broken code is not evidence, it is decoration. The check count in the summary line is derived from the checks that ran, never typed in — a hard-coded total drifts the moment someone adds a check, and then a tool about honesty ships a small lie in its own output.

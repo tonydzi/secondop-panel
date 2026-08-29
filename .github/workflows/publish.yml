@@ -24,6 +24,16 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: Tag must equal the package version
+        # A release tag and a pyproject version that disagree publish a number nobody
+        # announced - and PyPI never lets you re-upload that number. Fail before the build.
+        if: github.event_name == 'release'
+        run: |
+          TAG="${GITHUB_REF_NAME#v}"
+          PKG=$(python -c "import tomllib,sys;print(tomllib.load(open('pyproject.toml','rb'))['project']['version'])")
+          echo "tag=$TAG package=$PKG"
+          test "$TAG" = "$PKG" || { echo "::error::release tag $TAG != package version $PKG"; exit 1; }
+
       - name: Build sdist and wheel
         run: |
           python -m pip install --upgrade pip build twine

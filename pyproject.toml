@@ -4,7 +4,10 @@ build-backend = "hatchling.build"
 
 [project]
 name = "secondop-panel"
-version = "1.0.0"
+# Keep this equal to the release tag without the leading "v" - publish.yml refuses to build
+# when they disagree. They disagreed once (tag v0.1.0, package 1.0.0) and the mismatch would
+# have shipped a 1.0 to PyPI from a repo whose history says 0.1.
+version = "0.1.1"
 description = "A second opinion on your code from a PANEL of vendors, not one model. One reviewer is a special case of a panel, and it should be named out loud."
 readme = "README.md"
 requires-python = ">=3.8"
