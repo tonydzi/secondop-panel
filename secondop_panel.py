@@ -169,7 +169,7 @@ def _read_text(path):
     return text, ("TRUNCATED at %d bytes" % MAX_FILE_BYTES if truncated else "")
 
 
-def pack_files(paths, paths_only=False):
+def pack_files(paths, paths_only=False, budget=MAX_TOTAL_BYTES):
     """Turn a list of paths into the block the panel actually reads.
 
     ``paths_only=True`` exists so you can reproduce the failure mode on purpose, and so the
@@ -201,7 +201,7 @@ def pack_files(paths, paths_only=False):
         body = "\n".join("%5d| %s" % (i, ln)
                          for i, ln in enumerate(text.splitlines(), 1))
         chunk = "### FILE %s%s\n```\n%s\n```\n" % (p, (" -- " + note) if note else "", body)
-        if total + len(chunk) > MAX_TOTAL_BYTES:
+        if total + len(chunk) > budget:
             # The prompt said so, but the STATS did not -- so the operator-facing "not fully seen"
             # warning never fired and a partial pack could still exit 0. A drop the caller cannot
             # see is a silent truncation with extra steps (found by the Grok rail, 2026-08-10).
@@ -216,6 +216,28 @@ def pack_files(paths, paths_only=False):
     return header + "\n".join(out), {"mode": "contents", "files": len(paths), "bytes": total,
                                      "missing": missing, "truncated": truncated,
                                      "dropped": dropped}
+
+
+def clip_diff(diff_text):
+    """-> (text, was_truncated). The diff spends the SAME budget as the files."""
+    if len(diff_text) <= MAX_TOTAL_BYTES:
+        return diff_text, False
+    return diff_text[:MAX_TOTAL_BYTES], True
+
+
+def assemble(role, note, files, diff_text="", paths_only=False):
+    """Build the prompt with ONE budget shared by diff and files (VDAI/ANTI audit, 2026-10-19:
+    the diff used to get a full MAX_TOTAL_BYTES of its own and the files another, so the prompt
+    could reach twice the stated ceiling). Files get what the diff left over; whatever does not
+    fit is counted in stats, never dropped silently. -> (prompt, stats)."""
+    diff_text, diff_cut = clip_diff(diff_text or "")
+    if files:
+        block, stats = pack_files(files, paths_only=paths_only,
+                                  budget=max(0, MAX_TOTAL_BYTES - len(diff_text)))
+    else:
+        block, stats = "", {}
+    stats["diff_truncated"] = diff_cut
+    return build_prompt(role, note, block, diff_text), stats
 
 
 def build_prompt(role, note, files_block, diff_text=""):
@@ -653,12 +675,11 @@ def cmd_point(args, conf):
     if not files and not note and not diff:
         sys.stderr.write("ERROR: nothing to review -- pass --files, --context or --diff\n")
         return 2
-    block, stats = ("", {}) if not files else pack_files(files, paths_only=args.paths_only)
+    prompt, stats = assemble(role, note, files, diff, paths_only=args.paths_only)
     if files and not args.paths_only and stats.get("bytes", 0) == 0:
         sys.stderr.write("ERROR: every file was unreadable -- refusing to run a panel on "
                          "nothing (that is how models start inventing)\n")
         return 2
-    prompt = build_prompt(role, note, block, diff)
     rails, skipped = select_rails(conf, args.rails.split(",") if args.rails else None)
     for name, why in skipped:
         sys.stderr.write("SKIP rail %r: %s\n" % (name, why))
@@ -673,6 +694,9 @@ def cmd_point(args, conf):
              stats.get("files", 0), " PATHS-ONLY(degraded)" if args.paths_only else ""))
     # What the panel did NOT see must be as visible as what it did. A silent truncation reads
     # afterwards as "the whole file was reviewed" -- the same lie as a silent skip.
+    if stats.get("diff_truncated"):
+        print("!! NOT FULLY SEEN: the diff was cut at %d bytes (shared prompt budget)."
+              % MAX_TOTAL_BYTES)
     if stats.get("truncated") or stats.get("missing") or stats.get("dropped"):
         print("!! NOT FULLY SEEN: %d file(s) truncated at %d bytes, %d unreadable, %d dropped "
               "for prompt budget. The verdict covers only what was sent -- split the review."
@@ -687,8 +711,9 @@ def cmd_pack(args, conf):
     if not args.files:
         sys.stderr.write("ERROR: --files required\n")
         return 2
-    block, stats = pack_files(args.files, paths_only=args.paths_only)
-    print(build_prompt(args.role or "break", args.note or "", block))
+    prompt, stats = assemble(args.role or "break", args.note or "", args.files,
+                             paths_only=args.paths_only)
+    print(prompt)
     sys.stderr.write("\n[pack] %s\n" % json.dumps(stats))
     return 0
 
@@ -822,6 +847,13 @@ def cmd_selftest():
     _b, st = pack_files([small] * 8)
     os.remove(small)
     chk("files dropped for prompt budget are counted, not silent", st["dropped"] > 0)
+    bigf = os.path.join(tempfile.gettempdir(), "_secondop_budget_selftest.txt")
+    with open(bigf, "w", encoding="utf-8") as fh:
+        fh.write("y\n" * 30_000)
+    _p, st = assemble("break", "n", [bigf] * 4, "d" * 500_000)
+    os.remove(bigf)
+    chk("diff and files share ONE prompt budget (prompt %d <= %d + 20000 overhead)"
+        % (len(_p), MAX_TOTAL_BYTES), len(_p) <= MAX_TOTAL_BYTES + 20_000 and st["diff_truncated"])
     # The hang path directly: a rail that never came back must still occupy a row, otherwise the
     # denominator shrinks silently. (Simulated -- a real hang would cost the selftest a minute.)
     back = backfill_silent_rails([{"name": "fast", "family": "f", "reply": "ACCEPT"}],
