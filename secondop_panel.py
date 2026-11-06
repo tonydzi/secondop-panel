@@ -676,7 +676,7 @@ def cmd_point(args, conf):
         sys.stderr.write("ERROR: nothing to review -- pass --files, --context or --diff\n")
         return 2
     prompt, stats = assemble(role, note, files, diff, paths_only=args.paths_only)
-    if files and not args.paths_only and stats.get("bytes", 0) == 0:
+    if files and not diff and not args.paths_only and stats.get("bytes", 0) == 0:
         sys.stderr.write("ERROR: every file was unreadable -- refusing to run a panel on "
                          "nothing (that is how models start inventing)\n")
         return 2
