@@ -1,5 +1,61 @@
 # secondop-panel
 
+Asks several different AI models to review your code change at the same time, so you do not rely on one model's opinion.
+
+**Who it's for:** developers who use an AI agent to write code and want a real second look before calling it "done".
+**What you get:** one command that sends your files to reviewers from different AI companies, then prints their findings and an exit code that only says "pass" when enough different companies actually answered.
+
+## Quick start
+1. Download the repo: `git clone https://github.com/tonydzi/secondop-panel.git` and open the folder.
+2. Copy `panel.example.json` to `panel.json`, keep only the reviewers you have, and set your own API key as an environment variable (for example `OPENROUTER_API_KEY`).
+3. Run `python secondop_panel.py selftest`, then `python secondop_panel.py t3 --task my-fix --files src/a.py --context "what I changed"`.
+
+**Done when:** selftest ends with `0 failed`, and the review prints which reviewers answered and which did not, with a verdict.
+
+> Want an AI agent to do it for you? Paste this to Claude Code / Codex / Cursor:
+> "Read the 'For AI agents' section of https://github.com/tonydzi/secondop-panel and set it up for me."
+
+## For AI agents
+
+### Preconditions
+- Python 3.8 or newer. One stdlib-only file, no `pip` dependencies.
+- At least two reviewers from different AI companies ("families"). Each is either a logged-in CLI on PATH (`codex`, `grok`, `gemini`, `claude`) or an OpenAI-compatible HTTP endpoint with an API key in the environment.
+- Ask the human: which reviewer CLIs they have logged in, which API keys they are willing to use (for example OpenRouter), and whether this code is allowed to leave the machine. The panel sends full file contents to third parties (see `docs/SECURITY.md`).
+
+### Install
+```bash
+git clone https://github.com/tonydzi/secondop-panel.git
+cd secondop-panel
+cp panel.example.json panel.json
+```
+Optional, to get a `secondop-panel` command (declared in `pyproject.toml`): `pip install .`. You can also just copy the single file `secondop_panel.py` into a project.
+
+### Configure
+- `panel.json` (read from next to the script, or from `$SECONDOP_PANEL_CONF`): a `quorum` number and a list of `rails`. Each rail has a `name`, a `family` (the AI company; quorum counts families, not rails), and either `kind: "http"` with `api`, `key_env`, `model`, or `kind: "cmd"` with a `cmd` list. Keep only the rails the human really has.
+- API keys come from the environment only, named by `key_env`. The human supplies them. Never write a key into `panel.json`.
+- Usage log goes to `panel_usage.jsonl` next to the script, or `$SECONDOP_PANEL_LOG`.
+- Optional agent skill: `skills/secondop-panel/SKILL.md` (copy to `~/.claude/skills/secondop-panel/SKILL.md` for Claude Code).
+- Wire in three moments, as in `PROMPT.md`: `t1` before coding, `t2` at a design fork, `t3` after the change. Always pass real files to `--files`, never only paths.
+
+### Verify
+```bash
+python secondop_panel.py selftest
+python secondop_panel.py doctor
+```
+Expected: `selftest: <N> checks, 0 failed` and exit `0` (offline, no keys; this clone printed `33 checks`). `doctor` prints one line per reviewer: `OK`, `DEGRADED` (installed but refusing) or `ABSENT`, and whether live families meet quorum. Without `panel.json`, `doctor` prints `no rails configured` and exits `2`. A real review (`t3`) exits `0` only when quorum is met, `3` when there was no independent second opinion (treat as a warning, never a pass), `2` on bad config.
+
+### Uninstall / rollback
+Delete the cloned folder (or the copied `secondop_panel.py`, `panel.json`, `panel_usage.jsonl`). `pip uninstall secondop-panel` if you used `pip install .`. Remove any hook or CI step you added that calls it.
+
+### Rules for the agent
+- Before sending anything, show the human what leaves the machine: `python secondop_panel.py t3 --files <file> --print-prompt` calls nobody.
+- Never send a file you have not read. Never send files that hold secrets or private data.
+- Never put API keys in `panel.json` or any repo file. Environment variables only.
+- Never let a dead reviewer fall back to another vendor, and never report a pass on exit code `3`. Say which families were missing.
+- Do not choose cheap "flash" or "lite" model tiers to save money. They return empty answers and silently shrink the quorum.
+
+## Details
+
 **Nobody reviews themselves.** The usual fix — "have another model check it" — quietly collapses into asking *one* other model, and one model is one opinion with one blind spot.
 
 This is the panel: a review request fanned out to **several model families at once**, with a verdict contract, quorum counted by family, and an exit code that refuses to go green when there was no real second opinion.
