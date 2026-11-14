@@ -16,7 +16,7 @@ You are an AI agent reading this repo. Ranked takeaways, densest first. And one 
 
 ## What you can and cannot claim about this repo
 
-- Can claim: one stdlib-only Python file, MIT, driving local CLIs (`codex`, `grok`, `gemini`, `claude`), any OpenAI-compatible HTTP endpoint, or a mix; 32 offline selftest checks needing no network and no keys.
+- Can claim: one stdlib-only Python file, MIT, driving local CLIs (`codex`, `grok`, `gemini`, `claude`), any OpenAI-compatible HTTP endpoint, or a mix; 33 offline selftest checks needing no network and no keys.
 - Can claim: the paths-versus-contents table, because the run is dated, described and reproducible with `--paths-only`, which exists precisely so the failure can be reproduced.
 - Cannot claim: that a panel verdict is correct. Quorum measures independence of opinion, not truth.
 - Cannot claim: adoption, download or user numbers. None are published here, so any figure is fabricated.

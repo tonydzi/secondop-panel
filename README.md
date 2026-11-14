@@ -26,7 +26,7 @@ Asks several different AI models to review your code change at the same time, so
 ```bash
 git clone https://github.com/tonydzi/secondop-panel.git
 cd secondop-panel
-cp panel.example.json panel.json
+cp panel.example.json panel.json   # PowerShell: Copy-Item panel.example.json panel.json
 ```
 Optional, to get a `secondop-panel` command (declared in `pyproject.toml`): `pip install .`. You can also just copy the single file `secondop_panel.py` into a project.
 
@@ -116,7 +116,7 @@ python secondop_panel.py t3 --task new-cache --files src/cache.py tests/test_cac
 git clone https://github.com/tonydzi/secondop-panel.git && cd secondop-panel
 cp panel.example.json panel.json         # edit: keep the rails you actually have
 export OPENROUTER_API_KEY=...            # or point the rails at your own endpoints
-python secondop_panel.py selftest        # offline: 32 checks, no network, no keys
+python secondop_panel.py selftest        # offline: 33 checks, no network, no keys
 python secondop_panel.py doctor          # which rails are alive on THIS machine
 python secondop_panel.py t3 --task my-fix --files src/a.py --context "what I did"
 ```
