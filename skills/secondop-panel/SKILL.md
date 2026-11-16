@@ -48,6 +48,4 @@ More: `README.md`, `PROMPT.md`, `docs/GOTCHAS.md`, `docs/MODEL-FAMILIES.md`.
 
 Flagships worth a look on their own: [secondop-panel](https://github.com/tonydzi/secondop-panel) (a second opinion from a panel of external models), [claude-memory-tidy](https://github.com/tonydzi/claude-memory-tidy) (stop your agent's memory from rotting), [telegram-mcp-kit](https://github.com/tonydzi/telegram-mcp-kit) (your own Telegram over MCP in about 15 minutes).
 
-Author: **Anton Dziatkovskii**, Palo Alto AI Research Lab. Telegram [@tonydzi](https://t.me/tonydzi) - WhatsApp [+1 341 222 9178](https://wa.me/[id]) - X [[аккаунт]](https://x.com/Tony_Stef_)
-
-**Engineers: want to test-drive this setup?** Message me. I hand out free starter seeds to engineers who test and report back, and custom skill requests are welcome.
+Author: **Anton Dziatkovskii** ([github.com/tonydzi](https://github.com/tonydzi)). Questions and bug reports: [GitHub issues](https://github.com/tonydzi/secondop-panel/issues).

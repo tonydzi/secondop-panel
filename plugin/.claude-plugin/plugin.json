@@ -1,0 +1,24 @@
+{
+  "$schema": "https://anthropic.com/claude-code/plugin.schema.json",
+  "name": "secondop-panel",
+  "displayName": "secondop-panel",
+  "version": "1.0.1",
+  "description": "Second opinion from a panel of reviewer models from different labs, run with uvx secondop-panel==1.0.1. Quorum is counted by model family; exit 3 means no independent second opinion. Instructions only: the plugin ships no code, you supply panel.json and your own API keys or CLI logins.",
+  "author": {
+    "name": "Anton Dziatkovskii",
+    "url": "https://github.com/tonydzi"
+  },
+  "homepage": "https://github.com/tonydzi/secondop-panel",
+  "repository": "https://github.com/tonydzi/secondop-panel",
+  "license": "MIT",
+  "keywords": [
+    "code-review",
+    "second-opinion",
+    "llm-panel",
+    "multi-vendor",
+    "quorum",
+    "uvx"
+  ],
+  "privacyPolicyUrl": "https://github.com/tonydzi/secondop-panel/blob/main/PRIVACY.md",
+  "skills": "./skills/"
+}

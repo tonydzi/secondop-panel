@@ -1,0 +1,21 @@
+{
+  "name": "secondop-panel",
+  "owner": {
+    "name": "Anton Dziatkovskii",
+    "url": "https://github.com/tonydzi"
+  },
+  "metadata": {
+    "description": "A second opinion on your code from a panel of model families, not one model.",
+    "version": "1.0.1"
+  },
+  "plugins": [
+    {
+      "name": "secondop-panel",
+      "source": "./plugin",
+      "description": "Skill that runs uvx secondop-panel==1.0.1 to fan a plan or change out to reviewer models from several labs, with quorum by family.",
+      "version": "1.0.1",
+      "license": "MIT",
+      "category": "code-review"
+    }
+  ]
+}
