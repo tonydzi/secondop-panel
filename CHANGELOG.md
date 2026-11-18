@@ -3,6 +3,13 @@
 What shipped, in plain words. This file did not exist before 2026-11-06: the entry for 0.2.0 is
 recorded after the fact from the tag, not backdated.
 
+## [Unreleased]
+
+### Changed
+- **Reviewer prompt gets an evidence rule.** A rail that was given only a path or a summary used to
+  "review" files it had never seen and invent names. The system prompt now tells it to say
+  "no artifact body given" and stop, and to never cite files or functions absent from the text.
+
 ## [1.0.1] - 2026-11-06
 
 ### Fixed

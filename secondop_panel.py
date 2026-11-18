@@ -97,6 +97,9 @@ SYSTEM = (
     "unhandled real input shapes, and tests that would stay green on broken code. "
     "If the material needed to judge is missing, say so plainly and tag ACCEPT -- "
     "an honest 'I cannot see the code' is worth more than a confident guess. "
+    "EVIDENCE RULE: judge ONLY what is literally quoted in the material. If you were handed a "
+    "path, a name or a summary instead of the body, say 'no artifact body given' in one line and "
+    "stop; naming files, functions or imports that are not in the text is a failure, not a finding. "
     "Never claim you took an action; you only reason. Be terse."
 )
 
