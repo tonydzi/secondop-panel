@@ -5,6 +5,8 @@ recorded after the fact from the tag, not backdated.
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-11-21
+
 ### Changed
 - **Reviewer prompt gets an evidence rule.** A rail that was given only a path or a summary used to
   "review" files it had never seen and invent names. The system prompt now tells it to say

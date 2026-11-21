@@ -77,7 +77,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CONF_PATH = os.environ.get("SECONDOP_PANEL_CONF") or os.path.join(HERE, "panel.json")
 USAGE_LOG = os.environ.get("SECONDOP_PANEL_LOG") or os.path.join(HERE, "panel_usage.jsonl")
 
-VERSION = "1.0.1"
+VERSION = "1.0.2"
 
 # ---------------------------------------------------------------------------------------------
 # 1. THE CONTRACT
